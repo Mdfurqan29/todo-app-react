@@ -11,7 +11,6 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 
 const AppPage = () => {
-let [todo,setTodo] = useState([])
 let [todos,setTodos] = useState([])
 let [inputValue , setInputValue] = useState('')
 let [user , setUser] = useState('')
@@ -21,31 +20,35 @@ let navigation = useNavigate()
 const Chack = ()=>{
   onAuthStateChanged(Auth, (user) => {
 if (user) {
-setUser(user.uid)
+// setUser()
+getData(user.uid)        
+
+}else{
+  console.log('fail');
 }
 });
 }
 useEffect(()=>{
+
   Chack()
   },[])
 
-  function getData(){
-    var reference = ref(DATABASE,`UsersDetails/${user}`)
+
+  function getData(uid){
+    console.log(uid);
+    var reference = ref(DATABASE,`UsersDetails/${uid}`)
     onChildAdded(reference,function(data){
       rander1(data.val())
     })
   }
 const rander1 = (data)=>{
   if(data){
-    setData(data)
+    setData(pre=>[...pre,data])
   }
     }
-    useEffect(()=>{
-      getData()        
-          },[])
-
+    console.log(Data);
     function getDataFromDatabase(){
-      var reference = ref(DATABASE,`Todos/${Data.uid}`)
+      var reference = ref(DATABASE,`Todos/${Data[5]}`)
       onChildAdded(reference,function(data){
         rander2(data.val())
       })
@@ -76,7 +79,6 @@ alert('Enter Todos')
     obj.id = key
     const reference = ref(DATABASE, `Todos/${Data.uid}/${obj.id}`)
     set(reference, obj)
-    console.log("done");
 setInputValue('')
   }
 }
@@ -116,14 +118,14 @@ localStorage.clear('uid')
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}>
             <Box sx={{ ml: 1, width: '60px', height: '60px', backgroundColor: 'white', borderRadius: '50%' }}>
-              <img className={styles.imgUser} src={Data.imgURL} alt="" />
+              <img className={styles.imgUser} src={Data[4]} alt="" />
             </Box>
             <Typography variant='h6' sx={{ color: 'white' }}>
-              {Data.Name}
+              {Data[1]}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1, color: 'white',fontSize:17 }}>
-            <EmailIcon /> <span>{Data.Email}</span>
+            <EmailIcon /> <span>{Data[0]}</span>
           </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}>
