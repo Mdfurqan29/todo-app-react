@@ -13,16 +13,16 @@ import { useNavigate } from 'react-router-dom';
 const AppPage = () => {
 let [todos,setTodos] = useState([])
 let [inputValue , setInputValue] = useState('')
-let [user , setUser] = useState('')
+let [userUID , setUserUID] = useState('')
 let [Data , setData] = useState([])
 let navigation = useNavigate()
 
 const Chack = ()=>{
   onAuthStateChanged(Auth, (user) => {
 if (user) {
-// setUser()
-getData(user.uid)        
-
+setUserUID(user.uid)
+getData(user.uid) 
+getDataFromDatabase(user.uid)      
 }else{
   console.log('fail');
 }
@@ -35,7 +35,6 @@ useEffect(()=>{
 
 
   function getData(uid){
-    console.log(uid);
     var reference = ref(DATABASE,`UsersDetails/${uid}`)
     onChildAdded(reference,function(data){
       rander1(data.val())
@@ -46,9 +45,10 @@ const rander1 = (data)=>{
     setData(pre=>[...pre,data])
   }
     }
-    console.log(Data);
-    function getDataFromDatabase(){
-      var reference = ref(DATABASE,`Todos/${Data[5]}`)
+
+    function getDataFromDatabase(uid){
+      console.log(uid);
+      var reference = ref(DATABASE,`Todos/${uid}`)
       onChildAdded(reference,function(data){
         rander2(data.val())
       })
@@ -58,10 +58,11 @@ const rander1 = (data)=>{
       setTodos(pre=>[...pre,data])
     }
       }
+
+      console.log(todos);
   
-      useEffect(()=>{
-        getDataFromDatabase()      
-            },[Data])
+      // useEffect(()=>{
+      //       },[Data])
 
 
 const InputValue = (e)=>{
@@ -77,7 +78,7 @@ alert('Enter Todos')
     const keyRef = ref(DATABASE)
     const key = push(keyRef).key
     obj.id = key
-    const reference = ref(DATABASE, `Todos/${Data.uid}/${obj.id}`)
+    const reference = ref(DATABASE, `Todos/${userUID}/${obj.id}`)
     set(reference, obj)
 setInputValue('')
   }
@@ -86,7 +87,7 @@ setInputValue('')
 const dele = (index)=>{
 let delTodo = todos.filter((e,i)=>i!==index)
 let id = todos[index].id
-const refrance = ref(DATABASE,`Todos/${user}/${id}`)
+const refrance = ref(DATABASE,`Todos/${userUID}/${id}`)
 remove(refrance)
 setTodos(delTodo)
 }
@@ -95,7 +96,7 @@ const Update = (index)=>{
 let newTodo = prompt('Enter new Todo',todos[index].todo)
 todos[index].todo = newTodo
 let id = todos[index].id
-const refrance = ref(DATABASE,`Todos/${user}/${id}`)
+const refrance = ref(DATABASE,`Todos/${userUID}/${id}`)
 update(refrance,{
   todo:newTodo,
 })
